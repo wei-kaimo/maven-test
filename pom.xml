@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.wkm</groupId>
+    <artifactId>maven-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <!--添加子项目-->
+    <modules>
+        <module>maven-test-first</module>
+    </modules>
+    <!--打包为pom类型-->
+    <packaging>pom</packaging>
+    <!--父级Spring版本依赖-->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.4</version>
+    </parent>
+    <!--设置不同打包环境 dev为测试 self为开发  pro为生产-->
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <project.attr.active>0.0.1-SNAPSHOT</project.attr.active>
+                <project.attr.url>http://10.10.192.18:9091</project.attr.url>
+            </properties>
+        </profile>
+        <profile>
+            <id>self</id>
+            <properties>
+                <project.attr.active>0.0.1-SNAPSHOT</project.attr.active>
+                <project.attr.url>http://10.10.192.18:9091</project.attr.url>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>pro</id>
+            <properties>
+                <project.attr.active>0.0.1-RELEASE</project.attr.active>
+                <project.attr.url>http://188.104.31.76:9091</project.attr.url>
+            </properties>
+        </profile>
+    </profiles>
+
+    <!--构建配置-->
+    <build>
+        <!--打包插件-->
+        <pluginManagement>
+            <plugins>
+                <!-- 指定编译版本start -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                        <encoding>utf-8</encoding>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.plexus</groupId>
+                            <artifactId>plexus-compiler-eclipse</artifactId>
+                            <version>2.8.5</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <!-- 指定编译版本end -->
+                <!--跳过测试 begin-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M4</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+                <!--跳过测试 end-->
+                <!-- mybatis生成代码插件begin -->
+                <plugin>
+                    <groupId>org.mybatis.generator</groupId>
+                    <artifactId>mybatis-generator-maven-plugin</artifactId>
+                    <version>1.4.0</version>
+                    <configuration>
+                        <overwrite>true</overwrite>
+                    </configuration>
+                </plugin>
+                <!-- mybatis生成代码插件end -->
+                <!-- jar包生成插件start -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <!-- jar包生成插件end -->
+                <!-- 依赖包生成插件satrt-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <!-- 依赖包生成插件end-->
+                <!-- 依赖包生成插件satrt-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <!-- 依赖包生成插件end-->
+                <!-- 自定义打zip包start -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <!-- 自定义打zip包end -->
+                <!-- 加载安装组件start -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <!-- 加载安装组件end -->
+                <!-- 加载发布组件start -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                    <configuration>
+                        <tagNameFormat>v@{project.version}</tagNameFormat>
+                        <useReleaseProfile>true</useReleaseProfile>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                    </configuration>
+                </plugin>
+                <!-- 加载发布组件end -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <configuration>
+                        <!--<skip>true</skip>-->
+                        <!--<failOnError>false</failOnError>-->
+                        <!--当配置true时,只清理filesets里的文件,构建目录中得文件不被清理.默认是flase.-->
+                        <excludeDefaultDirectories>false</excludeDefaultDirectories>
+                        <filesets>
+                            <fileset>
+                                <!--要清理的目录位置-->
+                                <directory>mcac/mcac-deploy</directory>
+                                <!--是否跟随符号链接 (symbolic links)-->
+                                <followSymlinks>false</followSymlinks>
+                                <!--默认有些文件是不会被清理的,比如.svn文件,如果设置成false,则全部按照自定义的来处理-->
+                                <useDefaultExcludes>true</useDefaultExcludes>
+                                <!--对这些文件进行清理-->
+                                <includes>
+                                    <include>**/*</include>
+                                </includes>
+                                <!--对这些文件不清理-->
+                                <excludes/>
+                            </fileset>
+                        </filesets>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <!--<spring-cloud.version>Finchley.SR4</spring-cloud.version>-->
+        <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
+        <!-- 设置JDK版本属性 -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <!--<springVersion>5.0.0.RELEASE</springVersion>-->
+    </properties>
+
+    <repositories>
+        <!-- 配置nexus远程仓库 -->
+        <repository>
+            <id>nexus3-grep</id>
+            <name>Nexus Grep</name>
+            <url>${project.attr.url}/nexus/repository/maven-grep/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <!-- 配置发布包到远程仓库 -->
+        <snapshotRepository>
+            <id>nexus3-snapshots</id>
+            <name>Nexus snapshots</name>
+            <url>${project.attr.url}/nexus/repository/maven-snapshot</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus3-releases</id>
+            <name>Nexus releases</name>
+            <url>${project.attr.url}/nexus/repository/maven-releases</url>
+        </repository>
+    </distributionManagement>
+    <!--公用依赖-->
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+    <!--公用依赖版本控制-->
+    <dependencyManagement>
+
+    </dependencyManagement>
+    <!-- 配置从哪个仓库中下载构件，即jar包 -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>nexus-osc</id>
+            <name>Nexus Snapshot Repository</name>
+            <url>${project.attr.url}/nexus/repository/maven-grep/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+</project>
